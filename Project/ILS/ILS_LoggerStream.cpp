@@ -8,11 +8,11 @@ namespace {
 	template<typename... ARGS>
 	void FormatMsg(std::ostringstream& out, const char* msg, ARGS... args) {
 		auto buf = std::regex_replace(msg, std::regex("%t"), "%f");
-		auto size = vsnprintf(nullptr, 0, msg, args ...) + 1;
+		size_t size = vsnprintf(nullptr, 0, buf.c_str(), args ...) + 1;
 		if (size)
 		{
 			std::string res(size, '\0');
-			vsnprintf(&res[0], size, buf.data(), args...);
+			vsnprintf(&res[0], size, buf.c_str(), args...);
 			out << res;
 		}
 	}
