@@ -1,4 +1,22 @@
+#include <regex>
 #include "ILS_LoggerStream.h"
+
+namespace {
+	constexpr auto EMPTY = "";
+	constexpr auto WITE_SPACE = " ";
+
+	template<typename... ARGS>
+	void FormatMsg(std::ostringstream& out, const char* msg, ARGS... args) {
+		auto buf = std::regex_replace(msg, std::regex("%t"), "%f");
+		auto size = vsnprintf(nullptr, 0, msg, args ...) + 1;
+		if (size)
+		{
+			std::string res(size, '\0');
+			vsnprintf(&res[0], size, buf.data(), args...);
+			out << res;
+		}
+	}
+}
 
 TLoggerStream::TLoggerStream(const ILogger* pLogger, TFuncPtr pFunc)
 	: m_pLogger(pLogger)
@@ -20,123 +38,43 @@ TLoggerStream::TLoggerStream(const ILogger* pLogger, TFuncPtr pFunc, const char*
 {
 }
 
-const TLoggerStream& TLoggerStream::operator()(const LogId& id, const char* msg, ...) const {
-	unsigned int max_msg_size = 1024;
-	char* str = new char[max_msg_size];
-	char* buf = NULL; // дополнительный буффер, может пригодится, а может нет
-	try {
-		va_list marker;
-		// Для отображение параметра типа "время" используется специальный ключ %t, для логов просто переводим его в %f
-		// ради этого приходится копировать строку msg в отдельный редактируемый буффер buf
-		const char* ct = strstr(msg, "%t");
-		if (ct) {
-			buf = new char[strlen(msg) + 1];
-			strcpy(buf, msg);
-			char* t = strstr(buf, "%t");
-			while (t) {
-				t[1] = 'f';
-				t = strstr(buf, "%t");
-			}
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, buf, marker);
-			va_end(marker);
-		}
-		else {
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, msg, marker);
-			va_end(marker);
-		}
-		out << str;
-		//			logOut(str,id);
-	}
-	catch (...) {}
-	delete[] str;
-	if (buf != NULL) delete[] buf;
+
+const TLoggerStream& TLoggerStream::operator()(const TLogId& id, const char* msg, ...) const {
+	va_list args;
+	va_start(args, msg);
+	FormatMsg(m_out, msg, args);
+	va_end(args);
 	return *this;
-}
+} 
 
 const TLoggerStream& TLoggerStream::SectBegin(const char* msg, ...) const {
-	unsigned int max_msg_size = 1024;
-	char* str = new char[max_msg_size];
-	char* buf = NULL; // дополнительный буффер, может пригодится, а может нет
-	try {
-		out << "SectionBegin " << m_sSectId << " ";
-		va_list marker;
-		// Для отображение параметра типа "время" используется специальный ключ %t, для логов просто переводим его в %f
-		// ради этого приходится копировать строку msg в отдельный редактируемый буффер buf
-		const char* ct = strstr(msg, "%t");
-		if (ct) {
-			buf = new char[strlen(msg) + 1];
-			strcpy(buf, msg);
-			char* t = strstr(buf, "%t");
-			while (t) {
-				t[1] = 'f';
-				t = strstr(buf, "%t");
-			}
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, buf, marker);
-			va_end(marker);
-		}
-		else {
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, msg, marker);
-			va_end(marker);
-		}
-		out << str;
-		//			logOut(str,id);
-	}
-	catch (...) {}
-	delete[] str;
-	if (buf != NULL) delete[] buf;
+	m_out << "SectionBegin" << WITE_SPACE << m_sSectId << WITE_SPACE;
+	va_list args;
+	va_start(args, msg);
+	FormatMsg(m_out, msg, args);
+	va_end(args);
 	return *this;
 }
 
 void TLoggerStream::SectCheck(const char* sect) const {
 	if (m_sSectId != sect && m_pLogger) {
-		m_pLogger->errOut("Ожидается окончание секции " + m_sSectId + " вместо указанной " + sect, id);
+		m_pLogger->errOut("Ожидается окончание секции " + m_sSectId + " вместо указанной " + sect, m_id);
 	}
 }
 
 void TLoggerStream::SectCheck(const char* sect, unsigned int ind) const {
 	if (m_sSectId != (sect + std::to_string(ind)) && m_pLogger) {
-		m_pLogger->errOut("Ожидается окончание секции " + m_sSectId + " вместо указанной " + (sect + std::to_string(ind)), id);
+		m_pLogger->errOut("Ожидается окончание секции " + m_sSectId + " вместо указанной " + (sect + std::to_string(ind)), m_id);
 	}
 }
 
 const TLoggerStream& TLoggerStream::SectEnd(const char* msg, ...) const {
-	unsigned int max_msg_size = 1024;
-	char* str = new char[max_msg_size];
-	char* buf = NULL; // дополнительный буффер, может пригодится, а может нет
-	try {
-		out << "SectionEnd " << m_sSectId << " ";
-		va_list marker;
-		// Для отображение параметра типа "время" используется специальный ключ %t, для логов просто переводим его в %f
-		// ради этого приходится копировать строку msg в отдельный редактируемый буффер buf
-		const char* ct = strstr(msg, "%t");
-		if (ct) {
-			buf = new char[strlen(msg) + 1];
-			strcpy(buf, msg);
-			char* t = strstr(buf, "%t");
-			while (t) {
-				t[1] = 'f';
-				t = strstr(buf, "%t");
-			}
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, buf, marker);
-			va_end(marker);
-		}
-		else {
-			va_start(marker, msg);
-			vsnprintf(str, max_msg_size, msg, marker);
-			va_end(marker);
-		}
-		out << str;
-		//			logOut(str,id);
-	}
-	catch (...) {}
-	delete[] str;
-	if (buf != NULL) delete[] buf;
-	m_sSectId = "";
+	m_out << "SectionEnd" << WITE_SPACE << m_sSectId << WITE_SPACE;
+	va_list args;
+	va_start(args, msg);
+	FormatMsg(m_out, msg, args);
+	va_end(args);
+	m_sSectId = EMPTY;
 	return *this;
 }
 
@@ -145,16 +83,17 @@ const char* TLoggerStream::SectId() const {
 }
 
 void TLoggerStream::Flush() const {
-	(m_pLogger->*m_pFunc)(out.str(), id);
-	out.str("");
+	std::invoke(m_pFunc, m_pLogger, m_out.str(), m_id);
+	m_out.str(EMPTY);
 }
 
 TLoggerStream::~TLoggerStream() {
-	if (m_sSectId != "") {
-		// Если m_sSectId!="" знаачит она не была начата, но не закончена, заканчиваем насильно
-		out << "SectionEnd " << m_sSectId << " ";
+	if (!m_sSectId.empty()) {
+		// Если m_sSectId пустая значит она не была начата, но не закончена, заканчиваем насильно
+		m_out << "SectionEnd" << WITE_SPACE << m_sSectId << WITE_SPACE;
+		return;
 	}
 	else {
-		(m_pLogger->*m_pFunc)(out.str(), id);
+		std::invoke(m_pFunc, m_pLogger, m_out.str(), m_id);
 	}
 }

@@ -3,28 +3,31 @@
 
 #include <cstring>
 #include <sstream>
-
 #include "ILS_Logger.h"
 
 //------------------------------------------------------------------------------
 /// Тривиальный класс, для возможности потокового формирования сообщения в макросе ILS_LOG.
 class TLoggerStream
 {
-	typedef std::string Msg;
-	typedef std::string LogId;
-	typedef void (ILogger::* TFuncPtr)(const Msg& msg, const LogId& id) const;
-	mutable std::ostringstream out;  // Поток для накопления вывода.
+	using TLogger = ILogger;
+	using TMsg = TLogger::Msg;
+	using TLogId = TLogger::LogId;
+	using TFuncPtr = void (TLogger::*)(const TMsg&, const TLogId&) const;
+private: //Переменные-члены
+	mutable std::ostringstream m_out;  // Поток для накопления вывода.
 	mutable std::string m_sSectId;
-	mutable LogId id;
-	const ILogger* m_pLogger;
+	mutable TLogId m_id;
+	const TLogger* m_pLogger;
 	TFuncPtr m_pFunc;
+
 public:
 	/// Конструктор.
 	TLoggerStream(const ILogger* pLogger, TFuncPtr pFunc);
 	TLoggerStream(const ILogger* pLogger, TFuncPtr pFunc, const char* sect);
 	TLoggerStream(const ILogger* pLogger, TFuncPtr pFunc, const char* sect, unsigned int ind);
+
 	/// Функции-члены
-	const TLoggerStream& operator()(const LogId& id, const char* msg, ...) const;
+	const TLoggerStream& operator()(const TLogId& id, const char* msg, ...) const;
 	const TLoggerStream& SectBegin(const char* msg, ...) const;
 	void SectCheck(const char* sect) const;
 	void SectCheck(const char* sect, unsigned int ind) const;
@@ -35,9 +38,10 @@ public:
 	/// Вывод в поток.
 	template<class T>
 	inline const TLoggerStream& operator<<(const T& t) const {
-		out << t;
+		m_out << t;
 		return *this;
 	}
+
 	/// Деструктор
 	~TLoggerStream();
 }; // class TLoggerStream
