@@ -158,10 +158,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ILS\ILS_BaseLogger.cpp" />
     <ClCompile Include="ILS\ILS_StdLog.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ILS\ILS_BaseLogger.h" />
     <ClInclude Include="ILS\ILS_Defines.h" />
     <ClInclude Include="ILS\ILS_Logger.h" />
     <ClInclude Include="ILS\ILS_LoggerStream.h" />

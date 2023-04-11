@@ -5,6 +5,9 @@
     <ClCompile Include="ILS\ILS_StdLog.cpp">
       <Filter>ILS</Filter>
     </ClCompile>
+    <ClCompile Include="ILS\ILS_BaseLogger.cpp">
+      <Filter>ILS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ILS">
@@ -22,6 +25,9 @@
       <Filter>ILS</Filter>
     </ClInclude>
     <ClInclude Include="ILS\ILS_StdLog.h">
+      <Filter>ILS</Filter>
+    </ClInclude>
+    <ClInclude Include="ILS\ILS_BaseLogger.h">
       <Filter>ILS</Filter>
     </ClInclude>
   </ItemGroup>
