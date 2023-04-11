@@ -8,6 +8,9 @@
     <ClCompile Include="ILS\ILS_BaseLogger.cpp">
       <Filter>ILS</Filter>
     </ClCompile>
+    <ClCompile Include="ILS\ILS_LoggerStream.cpp">
+      <Filter>ILS</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ILS">
