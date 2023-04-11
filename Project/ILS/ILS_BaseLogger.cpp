@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "ILS_BaseLogger.h"
 
 // BaseLogger - стандартая реализация основных механизмов Logger-а. 
@@ -23,7 +23,7 @@ BaseLogger::BaseLogger() {
 // Функции:
 // Регистрация информационного сообщения
 void BaseLogger::infOut(const Msg& msg, const LogId& id) const {
-	lOut(iTitle() + msg);
+	ConsoleOut(iTitle() + msg);
 }
 //-----------------------------------------------------------------------------
 // Функции интерфейса
@@ -34,19 +34,25 @@ void BaseLogger::infOut(const Msg& msg, const LogId& id) const {
 // Функции:
 // Регистрация информационного сообщения
 void BaseLogger::logOut(const Msg& msg, const LogId& id) const {
-	lOut(lTitle() + msg);
+	ConsoleOut(lTitle() + msg);
 }
 // Регистрация предупреждения (warning) и не фатальной ошибки
 void BaseLogger::wrnOut(const Msg& msg, const LogId& id) const {
 	++warnings;
-	wOut(wTitle() + msg);
+	ConsoleOut(wTitle() + msg);
 }
 // Регистрация фатальной ошибки, 
 // после которой результаты процесса не определены
 void BaseLogger::errOut(const Msg& msg, const LogId& id) const {
 	++errors;
-	eOut(eTitle() + msg);
+	ConsoleOut(eTitle() + msg);
 }
+
+void BaseLogger::ConsoleOut(const std::string& msg) const {
+	if (bLogToConsole)
+		std::cout << msg << std::endl;
+}
+
 //-----------------------------------------------------------------------------
 // Вспомогательные функции
 // Создается общая для всех типов сообщений строка с заголовком

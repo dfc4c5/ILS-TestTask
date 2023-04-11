@@ -42,14 +42,15 @@ public: // Настройки StdLogger-а
 protected: // Функции интерфейса
 	//---------------------------------------------------------------------------
 	// Регистрация сообщения для анализатора логов
-	virtual void infOut(const Msg& msg, const LogId& id) const;
+	void infOut(const Msg& msg, const LogId& id) const override;
 	// Регистрация информационного сообщения
-	virtual void logOut(const Msg& msg, const LogId& id) const;
+	void logOut(const Msg& msg, const LogId& id) const override;
 	// Регистрация предупреждения (warning) и не фатальной ошибки
-	virtual void wrnOut(const Msg& msg, const LogId& id) const;
+	void wrnOut(const Msg& msg, const LogId& id) const override;
 	// Регистрация фатальной ошибки, после которой результаты процесса не определены
-	virtual void errOut(const Msg& msg, const LogId& id) const;
+	void errOut(const Msg& msg, const LogId& id) const override;
 protected: // Вспомогательные функции
+	virtual void ConsoleOut(const std::string& msg) const;
 	/// Создание строки со стандартным заголовком для сообщения.
 	/// Создается общая для всех типов сообщений строка с заголовком на основе 
 	/// значений настроек.
@@ -77,26 +78,6 @@ protected: // Вспомогательные функции
 	/// \note Эту функцию можно переопределить, в случае необходимости 
 	/// генерировать заголовок сообщения отличный  от стандартного.
 	virtual std::string eTitle() const;
-	//---------------------------------------------------------------------------
-protected: // Функиции механизма вывода
-	/// Вывод информационного сообщения.
-	/// Вируальная функция, которая <b>должна быть обязательно переопределена</b>
-	/// как вывод пользователю информационного сообщения, чтобы происходил 
-	/// реальный вывод на экран или в файл или в графическое окно и т.п.
-	/// \param msg - текст информационного сообщения.
-	virtual void lOut(const std::string& msg) const = 0;
-	/// Вывод предупреждения.
-	/// Вируальная функция, которая <b>должна быть обязательно переопределена</b>
-	/// как вывод пользователю предупреждения, чтобы происходил 
-	/// реальный вывод на экран или в файл или в графическое окно и т.п.
-	/// \param msg - текст предупреждения.
-	virtual void wOut(const std::string& msg) const = 0;
-	/// Вывод ошибки.
-	/// Вируальная функция, которая <b>должна быть обязательно переопределена</b>
-	/// как вывод пользователю обшибки, чтобы происходил 
-	/// реальный вывод на экран или в файл или в графическое окно и т.п.
-	/// \param msg - текст ошибки.
-	virtual void eOut(const std::string& msg) const = 0;
 }; // BaseLogger
 
 #endif // ILS_BaseLoggerH

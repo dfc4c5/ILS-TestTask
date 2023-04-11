@@ -17,7 +17,6 @@
 /// \see ILogger , BaseLogger
 class StdLogger : public BaseLogger {
 protected:
-	using BaseLogger::bLogToConsole;
 	// Потоки для вывода информационных сообщений, предупрежнений и ошибок
 	mutable std::ostream* log_out, * wrn_out, * err_out;
 	bool l_del, w_del, e_del;
@@ -81,11 +80,16 @@ public: // Конструктор
 	/// Виртуальный деструктор.
 	virtual ~StdLogger();
 	//---------------------------------------------------------------------------
-protected: // Функиции механизма вывода
-	virtual void ConsoleOut(const std::string& msg) const;
-	virtual void lOut(const std::string& msg) const;
-	virtual void wOut(const std::string& msg) const;
-	virtual void eOut(const std::string& msg) const;
+protected: // Функции интерфейса
+	//---------------------------------------------------------------------------
+	// Регистрация сообщения для анализатора логов
+	void infOut(const Msg& msg, const LogId& id) const override;
+	// Регистрация информационного сообщения
+	void logOut(const Msg& msg, const LogId& id) const override;
+	// Регистрация предупреждения (warning) и не фатальной ошибки
+	void wrnOut(const Msg& msg, const LogId& id) const override;
+	// Регистрация фатальной ошибки, после которой результаты процесса не определены
+	void errOut(const Msg& msg, const LogId& id) const override;
 }; // class StdLogger
 
 #endif // ILS_StdLoggerH

@@ -106,22 +106,25 @@ StdLogger::~StdLogger() {
 	if (e_del && err_out) delete err_out;
 }
 
-void StdLogger::ConsoleOut(const std::string& msg) const {
-	if (bLogToConsole)
-		std::cout << msg << std::endl;
-}
-
-void StdLogger::lOut(const std::string& msg) const {
-	if (log_out) (*log_out) << msg << std::endl;
+//-----------------------------------------------------------------------------
+void StdLogger::infOut(const Msg& msg, const LogId& id) const {
+	if (log_out)
+		(*log_out) << msg << std::endl;
 	ConsoleOut(msg);
 }
 
-void StdLogger::wOut(const std::string& msg) const {
-	if (wrn_out) (*wrn_out) << msg << std::endl;
+void StdLogger::logOut(const Msg& msg, const LogId& id) const {
+	infOut(msg, id);
+}
+
+void StdLogger::wrnOut(const Msg& msg, const LogId& id) const {
+	if (wrn_out)
+		(*wrn_out) << msg << std::endl;
 	ConsoleOut(msg);
 }
 
-void StdLogger::eOut(const std::string& msg) const {
-	if (err_out) (*err_out) << msg << std::endl;
+void StdLogger::errOut(const Msg& msg, const LogId& id) const {
+	if (err_out)
+		(*err_out) << msg << std::endl;
 	ConsoleOut(msg);
 }
